@@ -31,18 +31,19 @@ def check():
     config = json.loads(config_str)
     status = False
     mail_content = u""
-    for date in config['date']:
-        url = ticket_url % (date)
-        data = url_get(url)
-        reg = u'\"data\":{.*?\".*\",(\".*?G337.*?\"),.*\".*?\"}'
-        div_group = re.findall(reg, data, re.S | re.M)
-        for d in div_group:
-            info = d.split("|")
-            temp = u'' + info[3] + u"[" + info[13] + u'],' + info[8] + u'-' + info[9] + u',特等座[' + unicode(info[30], 'utf-8') + u'],一等座[' \
-                   + unicode(info[31], 'utf-8') + u'],二等座[' + unicode(info[32], 'utf-8') + u']\n'
-            if not ("无" == info[30] and "无" == info[32] and "无" == info[31]):
-               mail_content += temp
-            status = True
+    for key in config:
+        for date in config[key]['date']:
+            url = ticket_url % (date)
+            data = url_get(url)
+            reg = u'\"data\":{.*?\".*\",(\".*?' + key + u'.*?\"),.*\".*?\"}'
+            div_group = re.findall(reg, data, re.S | re.M)
+            for d in div_group:
+                info = d.split("|")
+                temp = u'' + info[3] + u"[" + info[13] + u'],' + info[8] + u'-' + info[9] + u',特等座[' + unicode(info[30], 'utf-8') + u'],一等座[' \
+                       + unicode(info[31], 'utf-8') + u'],二等座[' + unicode(info[32], 'utf-8') + u']\n'
+                if not (("无" == info[30] or ""== info[30].strip()) and ("无" == info[31] or ""== info[31].strip()) and ("无" == info[32] or ""== info[32].strip())):
+                    mail_content += temp
+                status = True
     if not status:
         mail_content = u'没有获取到数据、请检查'
     if not mail_content:
