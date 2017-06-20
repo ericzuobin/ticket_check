@@ -8,6 +8,9 @@ import urllib
 import urllib2
 import ssl
 import json
+
+import time
+
 mail_reciever = "sahinn@xxx.com"
 mail_url = 'http://172.16.3.145:82/LeheQ'
 config_url = "http://localhost:12306/config.json"
@@ -34,6 +37,7 @@ def check():
     for key in config:
         for date in config[key]['date']:
             url = ticket_url % (date)
+            time.sleep(5)
             data = url_get(url)
             reg = u'\"data\":{.*?\".*\",(\".*?' + key + u'.*?\"),.*\".*?\"}'
             div_group = re.findall(reg, data, re.S | re.M)
